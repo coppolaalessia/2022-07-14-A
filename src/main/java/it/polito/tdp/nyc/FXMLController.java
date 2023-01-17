@@ -1,8 +1,11 @@
 package it.polito.tdp.nyc;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
+
 import it.polito.tdp.nyc.model.Model;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -41,7 +44,7 @@ public class FXMLController {
     private TableColumn<?, ?> clV2; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbBorough"
-    private ComboBox<?> cmbBorough; // Value injected by FXMLLoader
+    private ComboBox<String> cmbBorough; // Value injected by FXMLLoader
 
     @FXML // fx:id="tblArchi"
     private TableView<?> tblArchi; // Value injected by FXMLLoader
@@ -57,13 +60,33 @@ public class FXMLController {
 
     @FXML
     void doAnalisiArchi(ActionEvent event) {
+    	String borgo = this.cmbBorough.getValue();
     	
-
+    	if(borgo==null) {
+    		txtResult.appendText("Errore: devi selezionare un borgo\n");
+    		return;
+    	}
+    	
+    	if(this.model.getVertici().size()==0) {
+    		txtResult.appendText("Errore: devi creare il grafo\n");
+    		return;
+    	}
+    	/*List<CityDistance> distanze = model.getCityDistances(scelto) ;
+    	
+    	tblQuartieri.setItems(FXCollections.observableArrayList(distanze));*/
     }
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
+    	String borgo = this.cmbBorough.getValue();
     	
+    	if(borgo==null) {
+    		txtResult.appendText("Errore: devi selezionare un borgo\n");
+    		return;
+    	}
+    	
+    	String msg = model.creaGrafo(borgo);
+    	txtResult.appendText(msg);
     }
 
     @FXML
@@ -90,6 +113,7 @@ public class FXMLController {
     
     public void setModel(Model model) {
     	this.model = model;
+    	this.cmbBorough.getItems().addAll(this.model.getBorghi());
     }
 
 }
