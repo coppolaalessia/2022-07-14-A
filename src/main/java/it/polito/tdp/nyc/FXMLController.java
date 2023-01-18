@@ -1,9 +1,11 @@
 package it.polito.tdp.nyc;
 
 import java.net.URL;
+import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import it.polito.tdp.nyc.model.Collegati;
 import it.polito.tdp.nyc.model.Model;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -14,6 +16,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 
 public class FXMLController {
 
@@ -35,19 +38,19 @@ public class FXMLController {
     private Button btnCreaLista; // Value injected by FXMLLoader
 
     @FXML // fx:id="clPeso"
-    private TableColumn<?, ?> clPeso; // Value injected by FXMLLoader
+    private TableColumn<Collegati, Integer> clPeso; // Value injected by FXMLLoader
 
     @FXML // fx:id="clV1"
-    private TableColumn<?, ?> clV1; // Value injected by FXMLLoader
+    private TableColumn<Collegati, String> clV1; // Value injected by FXMLLoader
 
     @FXML // fx:id="clV2"
-    private TableColumn<?, ?> clV2; // Value injected by FXMLLoader
+    private TableColumn<Collegati, String> clV2; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbBorough"
     private ComboBox<String> cmbBorough; // Value injected by FXMLLoader
 
     @FXML // fx:id="tblArchi"
-    private TableView<?> tblArchi; // Value injected by FXMLLoader
+    private TableView<Collegati> tblArchi; // Value injected by FXMLLoader
 
     @FXML // fx:id="txtDurata"
     private TextField txtDurata; // Value injected by FXMLLoader
@@ -71,9 +74,13 @@ public class FXMLController {
     		txtResult.appendText("Errore: devi creare il grafo\n");
     		return;
     	}
-    	/*List<CityDistance> distanze = model.getCityDistances(scelto) ;
+    	List<Collegati> archi = model.getVerticiPesoMaggioreDiN();
+    	Collections.sort(archi);
     	
-    	tblQuartieri.setItems(FXCollections.observableArrayList(distanze));*/
+    	tblArchi.setItems(FXCollections.observableArrayList(archi));
+    	this.txtResult.clear();
+    	this.txtResult.appendText("Peso medio: "+ this.model.getPesoMedio()+"\n");
+    	this.txtResult.appendText("Archi con peso maggiore del peso medio: "+ (this.model.getVerticiPesoMaggioreDiN().size()/2)+"\n");
     }
 
     @FXML
@@ -108,7 +115,9 @@ public class FXMLController {
         assert txtProb != null : "fx:id=\"txtProb\" was not injected: check your FXML file 'Scene.fxml'.";
         assert txtResult != null : "fx:id=\"txtResult\" was not injected: check your FXML file 'Scene.fxml'.";
 
-        
+        this.clV1.setCellValueFactory(new PropertyValueFactory<Collegati, String>("vertice1"));
+		this.clV2.setCellValueFactory(new PropertyValueFactory<Collegati, String>("vertice2"));
+        this.clPeso.setCellValueFactory(new PropertyValueFactory<Collegati, Integer>("peso"));
     }
     
     public void setModel(Model model) {

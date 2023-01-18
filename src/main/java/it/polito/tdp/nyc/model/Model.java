@@ -16,6 +16,8 @@ import it.polito.tdp.nyc.db.NYCDao;
 public class Model {
 	private NYCDao dao;
 	private Graph<String, DefaultWeightedEdge> grafo;
+	private List<Collegati> collegati;
+	Double pesoMedio;
 
 	public Model() {
 		this.dao = new NYCDao();
@@ -23,6 +25,8 @@ public class Model {
 		
 	public String creaGrafo(String borgo) {
 		this.grafo = new SimpleWeightedGraph<>(DefaultWeightedEdge.class);
+		this.collegati= new ArrayList<Collegati>();
+		
 		Map<String, String> ssid;
 		int peso;
 		
@@ -38,12 +42,40 @@ public class Model {
 					peso = ssid.size();
 					if(peso!=0) {
 						Graphs.addEdge(this.grafo, v1, v2, peso);
+						this.collegati.add(new Collegati(v1,v2,peso));
 					}
 				}
 			}
 		}
 		return "Grafo creato con "+this.grafo.vertexSet().size()+
 				" vertici e "+this.grafo.edgeSet().size()+" archi\n";
+	}
+	
+	public List<Collegati> getCollegati(){
+		return this.collegati;
+	}
+	
+	public List<Collegati> getVerticiPesoMaggioreDiN(){
+		List<Collegati> res = new ArrayList<Collegati>();
+		List<Collegati> collegati = new ArrayList<Collegati>(this.getCollegati());
+		int peso=0;
+		this.pesoMedio=0.0;
+		
+		//calcolo peso medio
+		for(Collegati c: collegati) {
+			peso+= c.getPeso();
+		}
+		pesoMedio= (double)peso/collegati.size();
+		
+		
+		//aggiungo vertici con peso > peso medio
+		for(Collegati c: collegati) {
+			if(c.getPeso()>pesoMedio) {
+				res.add(new Collegati(c.getVertice1(),c.getVertice2(),c.getPeso()));
+			}
+		}
+		return res;
+		
 	}
 	
 		
@@ -56,5 +88,13 @@ public class Model {
 	
 	public List<String> getBorghi(){
 		return this.dao.getBorghi();
+	}
+	
+	public Double getPesoMedio() {
+		return pesoMedio;
+	}
+
+	public void setPesoMedio(Double pesoMedio) {
+		this.pesoMedio = pesoMedio;
 	}
 }
